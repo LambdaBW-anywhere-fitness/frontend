@@ -1,70 +1,69 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import axios from "axios";
-import { axiosWithAuth } from "../utils/axiosWithAuth";
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
+import { login_user } from "../actions/index"
+import { useDispatch } from "react-redux"
+
+import { connect } from "react-redux"
 
 const LoginPage = props => {
+  const [login, setLogin] = useState({ username: "", password: "" })
+  const dispatch = useDispatch()
+  const { register, handleSubmit, errors } = useForm()
 
-    const [login, setLogin] = useState({username:"", password:""})
+  const onSubmit = (data, e) => {
+    e.preventDefault()
+    dispatch(login_user(data))
+    // return <Redirect to="/dashboard" />
+    props.history.push("/dashboard")
+  }
 
-    const { register, handleSubmit, errors } = useForm();
+  const changeHandler = elem => {
+    setLogin({ ...login, [elem.target.name]: elem.target.value })
+    // console.log("login", login);
+  }
 
-    const onSubmit= (data, e) => {
-        console.log(data);
-        // e.preventDefault();
-        axios
-            .post('https://anywhere-fitness-backend.herokuapp.com/api/auth/login', data)
-            .then (res => {
-                console.log('hello from the then');
-                localStorage.setItem("token", res.data.payload);
-                props.history.push('/Dashboard');
-            })
-            .catch(err => console.log(err));
-        e.target.reset();
-    };
+  return (
+    <form className="App" onSubmit={handleSubmit(onSubmit)}>
+      <h1>Log In</h1>
+      <hr></hr>
 
-    const changeHandler = elem => {
-        setLogin({ ...login, [elem.target.name]: elem.target.value});
-        // console.log("login", login);
-    }
+      <label htmlFor="username">Username:</label>
+      <input
+        onChange={changeHandler}
+        type="text"
+        name="username"
+        ref={register({ required: true, minLength: 3 })}
+      />
+      {errors.username && errors.username.type === "required" && (
+        <p className="starterPs">this field is required.</p>
+      )}
+      {errors.username && errors.username.type === "minLength" && (
+        <p className="starterPs">
+          this field requires a minimum length of 2 characters.
+        </p>
+      )}
 
-    return (
-        <form className="App" onSubmit={handleSubmit(onSubmit)}>
-            
-            <h1>Log In</h1>
-            <hr></hr>
+      <label htmlFor="password">Password:</label>
+      <input
+        onChange={changeHandler}
+        name="password"
+        type="password"
+        ref={register({ required: true, minLength: 5 })}
+      />
+      {errors.password && errors.password.type === "required" && (
+        <p className="starterPs">this field is required.</p>
+      )}
+      {errors.password && errors.password.type === "minLength" && (
+        <p className="starterPs">
+          this field requires a minimum length of 2 characters.
+        </p>
+      )}
 
-            <label htmlFor="username">Username:</label>
-                <input 
-                onChange={changeHandler}
-                type="text"
-                name="username" 
-                ref={register({required: true, minLength: 3})}
-                />
-                {errors.username && errors.username.type === "required" && (
-                    <p className="starterPs">this field is required.</p>
-                )}
-                {errors.username && errors.username.type === "minLength" && (
-                    <p className="starterPs">this field requires a minimum length of 2 characters.</p>
-                )}
-            
-            <label htmlFor="password">Password:</label>
-                <input 
-                onChange={changeHandler}
-                name="password"
-                type="password"
-                ref={register({required: true, minLength: 5})} 
-                />
-                {errors.password && errors.password.type === "required" && (
-                    <p className="starterPs">this field is required.</p>
-                )}
-                {errors.password && errors.password.type === "minLength" && (
-                    <p className="starterPs">this field requires a minimum length of 2 characters.</p>
-                )}
-
-                <input type='submit' className="submitButton2"/>
-        </form>
-    )
+      <input type="submit" className="submitButton2" />
+    </form>
+  )
 }
 
-export default LoginPage;
+const mapStateToProps = state => {}
+
+export default connect(mapStateToProps, {})(LoginPage)

@@ -7,10 +7,10 @@ const InstructorRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={() => {
-        if (props.role === "instructor") {
+        if (rest.role === "instructor") {
           return <Component />
         } else {
-          return <Redirect to="/login" />
+          return <Redirect to="/" />
         }
       }}
     />

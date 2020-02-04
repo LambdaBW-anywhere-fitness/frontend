@@ -1,5 +1,7 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
+import { register_user } from "../actions/index"
 import axios from "axios"
 import { axiosWithAuth } from "../utils/axiosWithAuth"
 
@@ -12,19 +14,12 @@ const RegisterPage = props => {
   })
 
   const { register, handleSubmit, errors } = useForm()
+  const dispatch = useDispatch()
 
   const onSubmit = (data, e) => {
-    console.log(data)
-    // e.preventDefault()
+    e.preventDefault()
+    dispatch(register_user(data))
 
-    axiosWithAuth()
-      .post("/auth/register", data)
-      .then(res => {
-        console.log(res)
-        localStorage.setItem("token", res.data.payload)
-        props.history.push("/DashBoard")
-      })
-      .catch(err => console.log(err))
     e.target.reset()
   }
 
@@ -35,7 +30,6 @@ const RegisterPage = props => {
 
   return (
     <form className="App" onSubmit={handleSubmit(onSubmit)}>
-
       <h1>Register</h1>
       <hr></hr>
 
@@ -88,14 +82,20 @@ const RegisterPage = props => {
       )}
 
       <div className="roleSelector">Select Your Role:</div>
-      <select className="dropDownTitle" name="role" ref={register({ required: true })}>
-        
-        <option className="selector" value="attendee">I'm an Attendee</option>
-        <option className="selector" value="instructor">I'm an Instructor</option>
+      <select
+        className="dropDownTitle"
+        name="role"
+        ref={register({ required: true })}
+      >
+        <option className="selector" value="attendee">
+          I'm an Attendee
+        </option>
+        <option className="selector" value="instructor">
+          I'm an Instructor
+        </option>
       </select>
 
       <input type="submit" className="submitButton" />
-      
     </form>
   )
 }
